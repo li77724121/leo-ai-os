@@ -1,0 +1,16 @@
+# 敏感文件 - 永不提交
+.env
+*.env
+*key*
+*pwd*
+*pass*
+*.log
+zspace-conn.txt
+model_stats.json
+.push_state
+.model_stats_pos
+
+# 运行数据
+data/
+logs/
+processed.json
