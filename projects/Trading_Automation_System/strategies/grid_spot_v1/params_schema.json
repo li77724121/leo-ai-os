@@ -1,0 +1,141 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://leohermes.local/schemas/grid_spot_v1.json",
+  "title": "Grid Spot Strategy Parameters",
+  "type": "object",
+  "required": [
+    "instId",
+    "grid_num",
+    "min_price",
+    "max_price",
+    "total_investment"
+  ],
+  "properties": {
+    "instId": {
+      "type": "string",
+      "pattern": "^[A-Z]+-[A-Z]+$",
+      "description": "交易对，如 BTC-USDT, ETH-BTC"
+    },
+    "grid_num": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 200,
+      "description": "网格数量"
+    },
+    "min_price": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "网格下限价格"
+    },
+    "max_price": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "网格上限价格"
+    },
+    "total_investment": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "总投入量 (计价货币数量)"
+    },
+    "direction": {
+      "type": "string",
+      "enum": ["long", "neutral"],
+      "default": "long",
+      "description": "网格方向"
+    },
+    "order_type": {
+      "type": "string",
+      "enum": ["limit", "post_only"],
+      "default": "limit",
+      "description": "订单类型"
+    },
+    "risk": {
+      "type": "object",
+      "properties": {
+        "max_drawdown_pct": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 0.5,
+          "default": 0.08
+        },
+        "stop_loss": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "trigger_price": { "type": "number", "exclusiveMinimum": 0 },
+            "order_type": { "type": "string", "enum": ["market", "limit"], "default": "market" }
+          }
+        },
+        "take_profit": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "target_roi_pct": { "type": "number", "minimum": 0, "default": 0.2 }
+          }
+        },
+        "capital": {
+          "type": "object",
+          "properties": {
+            "max_allocation_pct": { "type": "number", "minimum": 0.01, "maximum": 1, "default": 0.1 },
+            "min_reserve_pct": { "type": "number", "minimum": 0, "maximum": 0.5, "default": 0.05 }
+          }
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["live", "paper", "backtest"],
+          "default": "live"
+        },
+        "triggers": {
+          "type": "object",
+          "properties": {
+            "auto_start": { "type": "boolean", "default": true },
+            "start_condition": { "type": "string", "default": "" },
+            "stop_condition": { "type": "string", "default": "" }
+          }
+        },
+        "error_handling": {
+          "type": "object",
+          "properties": {
+            "max_retries": { "type": "integer", "minimum": 0, "maximum": 10, "default": 3 },
+            "retry_delay_sec": { "type": "integer", "minimum": 1, "maximum": 60, "default": 5 },
+            "on_api_error": { "type": "string", "enum": ["pause", "continue", "stop"], "default": "pause" },
+            "on_network_error": { "type": "string", "enum": ["pause", "continue", "stop"], "default": "pause" }
+          }
+        },
+        "sync": {
+          "type": "object",
+          "properties": {
+            "interval_sec": { "type": "integer", "minimum": 10, "maximum": 300, "default": 30 },
+            "full_reconcile_hour": { "type": "integer", "minimum": 0, "maximum": 23, "default": 4 }
+          }
+        }
+      }
+    },
+    "monitoring": {
+      "type": "object",
+      "properties": {
+        "alerts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "condition", "level"],
+            "properties": {
+              "name": { "type": "string" },
+              "condition": { "type": "string" },
+              "level": { "type": "string", "enum": ["info", "warning", "critical"] },
+              "channels": { "type": "array", "items": { "type": "string", "enum": ["telegram", "email", "webhook"] }, "default": ["telegram"] },
+              "cooldown_sec": { "type": "integer", "minimum": 0, "default": 3600 },
+              "action": { "type": "string", "enum": ["", "stop_strategy", "reduce_position"], "default": "" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

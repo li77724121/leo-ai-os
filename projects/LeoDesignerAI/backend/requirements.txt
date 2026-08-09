@@ -1,0 +1,10 @@
+fastapi>=0.104.0
+uvicorn>=0.24.0
+python-multipart>=0.0.6
+pydantic>=2.0
+Pillow>=10.0
+opencv-python>=4.8
+numpy>=1.24
+# rembg  # V2抠图用
+# onnxruntime  # V2抠图用
+# requests  # V2 AI API用

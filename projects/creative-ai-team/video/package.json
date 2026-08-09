@@ -1,0 +1,15 @@
+{
+  "name": "ai-creative-team-video",
+  "version": "1.0.0",
+  "description": "AI Creative Team - Remotion animation",
+  "scripts": {
+    "start": "npx remotion studio",
+    "build": "npx remotion render creative-team-video out/creative-team.mp4"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "remotion": "^4.0.0",
+    "@remotion/cli": "^4.0.0"
+  }
+}

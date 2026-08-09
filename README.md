@@ -79,3 +79,29 @@ cd ../trading_bot && python3 grid_trader.py
 ## 📄 License
 
 MIT License — 自由使用, 注明出处即可
+
+---
+
+## 🧩 projects/ — 开发项目合集
+
+所有 AI 公司开发项目统一收纳于此目录, 便于保存/复用/协作:
+
+| 项目 | 说明 |
+|------|------|
+| HermesAI-OS-Dashboard | Hermes 3D 指挥大屏 (Electron+React+Three.js) |
+| okx-alpha-hunter | OKX 行情 alpha 猎手 |
+| Trading_Automation_System | 交易自动化系统 |
+| Content_Automation_System | 内容自动化系统 |
+| Agent_Orchestration_System | Agent 编排系统 |
+| LeoTranslateAssistant | AI 翻译助手 |
+| LeoDesignerAI | AI 设计工具 |
+| OmniRoute | 全能路由 |
+| agent_marketplace | Agent 市场 |
+| creative-ai-team | 创意 AI 团队 |
+| strategy_sim | 策略模拟 |
+| powerpm_v3 | 项目管理 V3 |
+| watermark-camera | 水印相机 |
+| dashboard | 监控面板 |
+| trading_dashboard | 交易面板 |
+
+> 🔒 安全约定: 任何项目严禁提交 .env/密钥/个人证件, 已由 .gitignore 强制执行

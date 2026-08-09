@@ -1,0 +1,195 @@
+# ETH-BTC 现货网格策略 - 标准化参数模板
+# 基于当前实盘运行策略 (algoId: 3623788971748114432) 抽象
+
+metadata:
+  strategy_id: "grid_spot_v1"
+  strategy_name: "现货网格策略 v1"
+  version: "1.0.0"
+  author: "Tom"
+  created_at: "2025-06-29"
+  based_on_algo_id: "3623788971748114432"
+  description: |
+    适用于震荡行情的现货网格策略。在设定价格区间内，按固定网格数量
+    挂买卖单，低买高卖赚取价差。无杠杆、无强平风险、资金利用率高。
+
+# === 核心交易参数 ===
+trading:
+  # 交易对 (OKX instId 格式)
+  inst_id: "ETH-BTC"
+  inst_type: "SPOT"           # SPOT / SWAP / FUTURES / OPTION
+  
+  # 网格区间设置
+  grid:
+    upper_price: 0.2000       # 网格上限价格 (ETH/BTC)
+    lower_price: 0.0100       # 网格下限价格
+    grid_count: 16            # 网格数量 (建议 10-50)
+    # 价格精度将自动从市场数据获取
+  
+  # 投入资金
+  investment:
+    quote_ccy: "BTC"          # 计价币种
+    base_ccy: "ETH"           # 基础币种
+    total_investment: 0.0015  # 总投入量 (计价币种)
+    # 约 $100 @ 67000 BTC
+  
+  # 订单类型
+  order_type: "limit"         # limit / post_only (仅挂单不吃单)
+  
+  # 单边/双向网格
+  direction: "long"           # long (只做多网格) / neutral (双向网格)
+  # long: 仅在下半网格买入，上半网格卖出
+  # neutral: 全区间双向挂单
+
+# === 风控参数 ===
+risk:
+  # 单策略最大回撤限制
+  max_drawdown_pct: 0.08      # 8% 触发预警，10% 熔断
+  
+  # 止损设置 (可选，网格通常不设硬止损)
+  stop_loss:
+    enabled: false
+    trigger_price: 0.0080     # 破位止损价
+    order_type: "market"
+  
+  # 止盈设置
+  take_profit:
+    enabled: false
+    target_roi_pct: 0.20      # 目标收益率 20% 全部平仓
+  
+  # 资金管理
+  capital:
+    max_allocation_pct: 0.10  # 单策略占总权益上限 10%
+    min_reserve_pct: 0.05     # 预留保证金 5%
+  
+  # 频率限制
+  frequency:
+    max_orders_per_minute: 30
+    min_order_interval_ms: 100
+
+# === 运行控制参数 ===
+execution:
+  # 运行模式
+  mode: "live"                # live / paper / backtest
+  
+  # 启动/停止触发器
+  triggers:
+    auto_start: true          # 部署即启动
+    start_condition: ""       # 可选：价格/指标条件
+    stop_condition: ""        # 可选：止损/止盈/时间
+  
+  # 异常处理
+  error_handling:
+    max_retries: 3
+    retry_delay_sec: 5
+    on_api_error: "pause"     # pause / continue / stop
+    on_network_error: "pause"
+  
+  # 状态同步
+  sync:
+    interval_sec: 30          # 状态同步间隔
+    full_reconcile_hour: 4    # 每日 UTC 04:00 全量对账
+
+# === 监控告警 ===
+monitoring:
+  alerts:
+    - name: "grid_no_trades_2h"
+      condition: "trades_last_2h == 0 and state == 'running'"
+      level: "info"
+      channels: ["telegram"]
+      cooldown_sec: 7200
+    
+    - name: "drawdown_warning"
+      condition: "drawdown_pct > 0.05"
+      level: "warning"
+      channels: ["telegram"]
+      cooldown_sec: 3600
+    
+    - name: "drawdown_critical"
+      condition: "drawdown_pct > 0.10"
+      level: "critical"
+      channels: ["telegram", "email"]
+      action: "stop_strategy"
+      cooldown_sec: 0
+    
+    - name: "price_out_of_range"
+      condition: "last_price > upper_price * 1.02 or last_price < lower_price * 0.98"
+      level: "warning"
+      channels: ["telegram"]
+      cooldown_sec: 1800
+
+# === 复盘指标 ===
+review:
+  metrics:
+    - "total_pnl"
+    - "grid_profit"
+    - "float_pnl"
+    - "trade_count"
+    - "win_rate"
+    - "avg_hold_time"
+    - "max_drawdown"
+    - "sharpe_ratio"
+    - "capital_utilization"
+  
+  frequency:
+    daily: true
+    weekly: true
+    monthly: true
+
+# === 回测配置 ===
+backtest:
+  enabled: true
+  data_source: "okx"          # okx / csv / parquet
+  start_date: "2024-01-01"
+  end_date: "2025-06-28"
+  fee_rate: 0.0008            # 0.08% 现货手续费
+  slippage_bps: 2             # 2bp 滑点
+  initial_capital: 0.0015
+  parameter_sweep:
+    grid_count: [10, 12, 14, 16, 18, 20, 24, 30]
+    upper_price: [0.15, 0.18, 0.20, 0.22, 0.25]
+    lower_price: [0.008, 0.01, 0.012, 0.015]
+
+# === 部署配置 ===
+deployment:
+  runner: "python"            # python / binary / docker
+  python_module: "src.strategies.grid.grid_runner"
+  env_vars:
+    OKX_PROFILE: "okx-live"
+  resources:
+    cpu_limit: "0.5"
+    memory_limit: "512Mi"
+  health_check:
+    endpoint: "http://localhost:8080/health"
+    interval_sec: 30
+
+# === 当前实盘快照 (2025-06-29) ===
+current_snapshot:
+  algo_id: "3623788971748114432"
+  state: "running"
+  investment: 0.001500498
+  grid_num: 16
+  max_px: "0.2"
+  min_px: "0.01"
+  run_px: "0.02783"
+  cur_base_sz: "0.01064124"
+  cur_quote_sz: "0.0001193054739626"
+  trade_num: 14
+  active_ord_num: 16
+  total_pnl: "-0.0000706322142285067365"
+  pnl_ratio: "-0.0470725147441095"
+  float_profit: "-0.0000706322142285067365"
+  u_time: "1782684176955"
+  c_time: "1780499727215"
+
+# === 参数验证规则 ===
+validation:
+  rules:
+    - "upper_price > lower_price"
+    - "grid_count >= 5 and grid_count <= 100"
+    - "total_investment > 0"
+    - "upper_price / lower_price >= 2"  # 区间至少 2 倍
+    - "grid_count <= (upper_price / lower_price - 1) * 10"  # 网格不要太密
+  warnings:
+    - "投入资金建议不超过单币种可用余额 80%"
+    - "网格区间建议覆盖近 30 日价格波动范围 80% 以上"
+    - "grid_count 过大增加手续费成本，过小降低成交概率"
