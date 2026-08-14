@@ -1,0 +1,35 @@
+{
+  "": {
+    "swift-dependencies": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/master.swiftdeps"
+  },
+  "/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/ContentView.swift": {
+    "dependencies": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/ContentView.d",
+    "object": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/ContentView.swift.o",
+    "swiftmodule": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/ContentView~partial.swiftmodule",
+    "swift-dependencies": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/ContentView.swiftdeps"
+  },
+  "/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/LeoTranslateAssistantApp.swift": {
+    "dependencies": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/LeoTranslateAssistantApp.d",
+    "object": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/LeoTranslateAssistantApp.swift.o",
+    "swiftmodule": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/LeoTranslateAssistantApp~partial.swiftmodule",
+    "swift-dependencies": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/LeoTranslateAssistantApp.swiftdeps"
+  },
+  "/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/ServiceProvider.swift": {
+    "dependencies": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/ServiceProvider.d",
+    "object": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/ServiceProvider.swift.o",
+    "swiftmodule": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/ServiceProvider~partial.swiftmodule",
+    "swift-dependencies": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/ServiceProvider.swiftdeps"
+  },
+  "/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/SettingsView.swift": {
+    "dependencies": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/SettingsView.d",
+    "object": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/SettingsView.swift.o",
+    "swiftmodule": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/SettingsView~partial.swiftmodule",
+    "swift-dependencies": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/SettingsView.swiftdeps"
+  },
+  "/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/TranslationService.swift": {
+    "dependencies": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/TranslationService.d",
+    "object": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/TranslationService.swift.o",
+    "swiftmodule": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/TranslationService~partial.swiftmodule",
+    "swift-dependencies": "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/TranslationService.swiftdeps"
+  }
+}

@@ -1,0 +1,81 @@
+client:
+  name: basic
+  file-system: device-agnostic
+tools: {}
+targets:
+  "LeoTranslateAssistant-arm64-apple-macosx15.0-debug.exe": ["<LeoTranslateAssistant-arm64-apple-macosx15.0-debug.exe>"]
+  "LeoTranslateAssistant-arm64-apple-macosx15.0-debug.module": ["<LeoTranslateAssistant-arm64-apple-macosx15.0-debug.module>"]
+  "PackageStructure": ["<PackageStructure>"]
+  "main": ["<LeoTranslateAssistant-arm64-apple-macosx15.0-debug.exe>","<LeoTranslateAssistant-arm64-apple-macosx15.0-debug.module>"]
+  "test": ["<LeoTranslateAssistant-arm64-apple-macosx15.0-debug.exe>","<LeoTranslateAssistant-arm64-apple-macosx15.0-debug.module>"]
+default: "main"
+nodes:
+  "/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/":
+    is-directory-structure: true
+    content-exclusion-patterns: [".git",".build"]
+  "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant":
+    is-mutated: true
+commands:
+  "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant-entitlement.plist":
+    tool: write-auxiliary-file
+    inputs: ["<entitlement-plist>","<com.apple.security.get-task-allow>"]
+    outputs: ["/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant-entitlement.plist"]
+    description: "Write auxiliary file /Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant-entitlement.plist"
+
+  "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/sources":
+    tool: write-auxiliary-file
+    inputs: ["<sources-file-list>","/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/ContentView.swift","/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/LeoTranslateAssistantApp.swift","/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/ServiceProvider.swift","/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/SettingsView.swift","/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/TranslationService.swift"]
+    outputs: ["/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/sources"]
+    description: "Write auxiliary file /Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/sources"
+
+  "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.product/Objects.LinkFileList":
+    tool: write-auxiliary-file
+    inputs: ["<link-file-list>","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/ContentView.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/LeoTranslateAssistantApp.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/ServiceProvider.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/SettingsView.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/TranslationService.swift.o"]
+    outputs: ["/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.product/Objects.LinkFileList"]
+    description: "Write auxiliary file /Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.product/Objects.LinkFileList"
+
+  "/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt":
+    tool: write-auxiliary-file
+    inputs: ["<swift-get-version>","/Library/Developer/CommandLineTools/usr/bin/swiftc"]
+    outputs: ["/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt"]
+    always-out-of-date: "true"
+    description: "Write auxiliary file /Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt"
+
+  "<LeoTranslateAssistant-arm64-apple-macosx15.0-debug.exe>":
+    tool: phony
+    inputs: ["<LeoTranslateAssistant-arm64-apple-macosx15.0-debug.exe-CodeSigning>"]
+    outputs: ["<LeoTranslateAssistant-arm64-apple-macosx15.0-debug.exe>"]
+
+  "<LeoTranslateAssistant-arm64-apple-macosx15.0-debug.module>":
+    tool: phony
+    inputs: ["/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/ContentView.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/LeoTranslateAssistantApp.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/ServiceProvider.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/SettingsView.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/TranslationService.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/Modules/LeoTranslateAssistant.swiftmodule"]
+    outputs: ["<LeoTranslateAssistant-arm64-apple-macosx15.0-debug.module>"]
+
+  "C.LeoTranslateAssistant-arm64-apple-macosx15.0-debug.exe":
+    tool: shell
+    inputs: ["/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/ContentView.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/LeoTranslateAssistantApp.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/ServiceProvider.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/SettingsView.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/TranslationService.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.product/Objects.LinkFileList"]
+    outputs: ["/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant"]
+    description: "Linking ./.build/arm64-apple-macosx/debug/LeoTranslateAssistant"
+    args: ["/Library/Developer/CommandLineTools/usr/bin/swiftc","-L","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug","-o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant","-module-name","LeoTranslateAssistant","-Xlinker","-no_warn_duplicate_libraries","-emit-executable","-Xlinker","-alias","-Xlinker","_LeoTranslateAssistant_main","-Xlinker","_main","-Xlinker","-rpath","-Xlinker","@loader_path","@/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.product/Objects.LinkFileList","-target","arm64-apple-macosx14.0","-Xlinker","-add_ast_path","-Xlinker","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/Modules/LeoTranslateAssistant.swiftmodule","-F","/Library/Developer/CommandLineTools/Library/Developer/Frameworks","-sdk","/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk","-g","-Xlinker","-rpath","-Xlinker","/Library/Developer/CommandLineTools/Library/Developer/Frameworks"]
+
+  "C.LeoTranslateAssistant-arm64-apple-macosx15.0-debug.exe-entitlements":
+    tool: shell
+    inputs: ["/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant-entitlement.plist"]
+    outputs: ["<LeoTranslateAssistant-arm64-apple-macosx15.0-debug.exe-CodeSigning>"]
+    description: "Applying debug entitlements to ./.build/arm64-apple-macosx/debug/LeoTranslateAssistant"
+    args: ["codesign","--force","--sign","-","--entitlements","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant-entitlement.plist","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant"]
+
+  "C.LeoTranslateAssistant-arm64-apple-macosx15.0-debug.module":
+    tool: shell
+    inputs: ["/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/ContentView.swift","/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/LeoTranslateAssistantApp.swift","/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/ServiceProvider.swift","/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/SettingsView.swift","/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/TranslationService.swift","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/sources"]
+    outputs: ["/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/ContentView.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/LeoTranslateAssistantApp.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/ServiceProvider.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/SettingsView.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/TranslationService.swift.o","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/Modules/LeoTranslateAssistant.swiftmodule"]
+    description: "Compiling Swift Module 'LeoTranslateAssistant' (5 sources)"
+    args: ["/Library/Developer/CommandLineTools/usr/bin/swiftc","-module-name","LeoTranslateAssistant","-emit-dependencies","-emit-module","-emit-module-path","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/Modules/LeoTranslateAssistant.swiftmodule","-output-file-map","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/output-file-map.json","-incremental","-c","@/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/LeoTranslateAssistant.build/sources","-I","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/Modules","-target","arm64-apple-macosx14.0","-enable-batch-mode","-index-store-path","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/index/store","-Onone","-enable-testing","-j8","-DSWIFT_PACKAGE","-DDEBUG","-module-cache-path","/Users/leo/Desktop/LeoTranslateAssistant/.build/arm64-apple-macosx/debug/ModuleCache","-parseable-output","-Xfrontend","-entry-point-function-name","-Xfrontend","LeoTranslateAssistant_main","-swift-version","5","-F","/Library/Developer/CommandLineTools/Library/Developer/Frameworks","-sdk","/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk","-g","-Xcc","-isysroot","-Xcc","/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk","-Xcc","-fPIC","-Xcc","-g","-package-name","leotranslateassistant"]
+
+  "PackageStructure":
+    tool: package-structure-tool
+    inputs: ["/Users/leo/Desktop/LeoTranslateAssistant/LeoTranslateAssistant/","/Users/leo/Desktop/LeoTranslateAssistant/Package.swift","/Users/leo/Desktop/LeoTranslateAssistant/Package.resolved"]
+    outputs: ["<PackageStructure>"]
+    description: "Planning build"
+    allow-missing-inputs: true
+

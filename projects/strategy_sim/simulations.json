@@ -1,0 +1,16 @@
+[
+  {
+    "id": "SIM202607241904",
+    "market": "Germany",
+    "budget_monthly": 500,
+    "duration_months": 12,
+    "predicted_customers": 120,
+    "predicted_mrr": 21969.6,
+    "total_revenue": 263635.2,
+    "total_cost": 6000,
+    "roi": 4293.9,
+    "risk": "\u4f4e",
+    "timestamp": "2026-07-24T19:04:08.896785",
+    "confidence": 97
+  }
+]

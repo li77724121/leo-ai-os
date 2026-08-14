@@ -1,0 +1,127 @@
+# 告警规则配置
+# condition: 支持的变量见 AlertEngine._build_alert_context()
+# level: info / warning / critical
+# channels: telegram / email / webhook
+# action: "" / "stop_strategy" / "reduce_position"
+
+alerts:
+  # === 策略级告警 ===
+  - name: "strategy_drawdown_warning"
+    condition: "strategy.drawdown_pct > 0.08"
+    level: "warning"
+    channels: ["telegram"]
+    cooldown_sec: 3600
+    action: ""
+    enabled: true
+  
+  - name: "strategy_drawdown_critical"
+    condition: "strategy.drawdown_pct > 0.12"
+    level: "critical"
+    channels: ["telegram", "email"]
+    cooldown_sec: 0
+    action: "stop_strategy"
+    enabled: true
+  
+  - name: "strategy_no_trades_4h"
+    condition: "strategy.trade_count == 0 and system.uptime_sec > 14400"
+    level: "info"
+    channels: ["telegram"]
+    cooldown_sec: 7200
+    action: ""
+    enabled: true
+  
+  - name: "strategy_win_rate_low"
+    condition: "strategy.trade_count > 20 and strategy.win_rate < 0.35"
+    level: "warning"
+    channels: ["telegram"]
+    cooldown_sec: 86400
+    action: ""
+    enabled: true
+
+  # === 账户级告警 ===
+  - name: "account_drawdown_warning"
+    condition: "account.drawdown_pct > 0.08"
+    level: "warning"
+    channels: ["telegram"]
+    cooldown_sec: 3600
+    action: ""
+    enabled: true
+  
+  - name: "account_drawdown_critical"
+    condition: "account.drawdown_pct > 0.10"
+    level: "critical"
+    channels: ["telegram", "email"]
+    cooldown_sec: 0
+    action: "stop_strategy"
+    enabled: true
+  
+  - name: "margin_ratio_low"
+    condition: "risk.margin_ratio > 0 and risk.margin_ratio < 1.5"
+    level: "critical"
+    channels: ["telegram", "email"]
+    cooldown_sec: 300
+    action: "reduce_position"
+    enabled: true
+
+  # === 系统级告警 ===
+  - name: "api_error_rate_high"
+    condition: "system.api_error_rate > 0.1"
+    level: "warning"
+    channels: ["telegram"]
+    cooldown_sec: 600
+    action: ""
+    enabled: true
+  
+  - name: "api_latency_high"
+    condition: "system.api_latency_ms > 5000"
+    level: "warning"
+    channels: ["telegram"]
+    cooldown_sec: 1800
+    action: ""
+    enabled: true
+  
+  - name: "data_stale"
+    condition: "system.data_freshness_sec > 120"
+    level: "warning"
+    channels: ["telegram"]
+    cooldown_sec: 600
+    action: ""
+    enabled: true
+
+  # === 网格策略特有 ===
+  - name: "grid_price_out_of_range"
+    condition: "strategy.grid.current_price > strategy.grid.upper_price * 1.02 or strategy.grid.current_price < strategy.grid.lower_price * 0.98"
+    level: "warning"
+    channels: ["telegram"]
+    cooldown_sec: 1800
+    action: ""
+    enabled: true
+  
+  - name: "grid_low_capital_utilization"
+    condition: "strategy.grid.capital_utilization < 0.3"
+    level: "info"
+    channels: ["telegram"]
+    cooldown_sec: 86400
+    action: ""
+    enabled: true
+
+
+# === 通知渠道配置（环境变量覆盖）===
+channels:
+  telegram:
+    enabled: true
+    # bot_token: ${TELEGRAM_BOT_TOKEN}
+    # chat_id: ${TELEGRAM_CHAT_ID}
+  
+  email:
+    enabled: false
+    # smtp_host: ${SMTP_HOST}
+    # smtp_port: 587
+    # username: ${SMTP_USER}
+    # password: ${SMTP_PASS}
+    # to: ${ALERT_EMAIL_TO}
+  
+  webhook:
+    enabled: false
+    # url: ${WEBHOOK_URL}
+    # secret: ${WEBHOOK_SECRET}

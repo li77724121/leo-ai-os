@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Creative Team Banner</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #0a0a12; font-family: system-ui, -apple-system, sans-serif; }
+  .banner {
+    width: 1200px; height: 500px;
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 40%, #24243e 70%, #0f0c29 100%);
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.6), inset 0 0 80px rgba(99,102,241,0.08);
+    display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 60px;
+  }
+  /* Animated grid background */
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(99,102,241,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,102,241,0.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse at 50% 40%, black 30%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 40%, black 30%, transparent 70%);
+  }
+  /* Glow orbs */
+  .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35; }
+  .orb-1 { width: 400px; height: 400px; background: #6366f1; top: -100px; left: -100px; }
+  .orb-2 { width: 300px; height: 300px; background: #ec4899; bottom: -80px; right: -80px; }
+  .orb-3 { width: 250px; height: 250px; background: #06b6d4; top: 50%; left: 60%; }
+  /* Title */
+  .title {
+    position: relative; z-index: 2;
+    text-align: center;
+  }
+  .title h1 {
+    font-size: 72px; font-weight: 800;
+    background: linear-gradient(135deg, #a78bfa 0%, #f472b6 30%, #22d3ee 70%, #a78bfa 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    letter-spacing: -2px; line-height: 1;
+    text-shadow: none;
+    filter: drop-shadow(0 0 40px rgba(167,139,250,0.3));
+  }
+  .title .sub {
+    margin-top: 12px;
+    font-size: 20px; color: rgba(255,255,255,0.5);
+    letter-spacing: 8px; text-transform: uppercase; font-weight: 400;
+  }
+  /* Four AI Agents */
+  .agents {
+    position: relative; z-index: 2;
+    display: flex; gap: 60px; margin-top: 40px;
+  }
+  .agent {
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    opacity: 0; animation: fadeIn 0.6s ease forwards;
+  }
+  .agent:nth-child(1) { animation-delay: 0.2s; }
+  .agent:nth-child(2) { animation-delay: 0.4s; }
+  .agent:nth-child(3) { animation-delay: 0.6s; }
+  .agent:nth-child(4) { animation-delay: 0.8s; }
+  @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+  .agent { transform: translateY(20px); }
+  .icon-wrap {
+    width: 80px; height: 80px; border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; position: relative;
+    transition: transform 0.3s ease;
+  }
+  .icon-wrap:hover { transform: scale(1.15) rotate(-3deg); }
+  .icon-wrap::after {
+    content: ''; position: absolute; inset: -4px; border-radius: 24px;
+    opacity: 0.3; z-index: -1; filter: blur(8px);
+  }
+  .agent-1 .icon-wrap { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+  .agent-1 .icon-wrap::after { background: #6366f1; }
+  .agent-2 .icon-wrap { background: linear-gradient(135deg, #ec4899, #f472b6); }
+  .agent-2 .icon-wrap::after { background: #ec4899; }
+  .agent-3 .icon-wrap { background: linear-gradient(135deg, #06b6d4, #22d3ee); }
+  .agent-3 .icon-wrap::after { background: #06b6d4; }
+  .agent-4 .icon-wrap { background: linear-gradient(135deg, #10b981, #34d399); }
+  .agent-4 .icon-wrap::after { background: #10b981; }
+  .agent-name { font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 500; letter-spacing: 1px; text-transform: uppercase; }
+  .agent-desc { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 0.5px; }
+  /* Particles */
+  .particles { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+  .particle {
+    position: absolute; width: 4px; height: 4px;
+    background: rgba(255,255,255,0.4); border-radius: 50%;
+    animation: float 8s infinite ease-in-out;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); opacity: 0.4; }
+    50% { transform: translateY(-60px) translateX(20px); opacity: 0.8; }
+  }
+  .particle:nth-child(1) { left: 10%; top: 60%; animation-delay: 0s; }
+  .particle:nth-child(2) { left: 20%; top: 30%; animation-delay: 1s; width: 3px; height: 3px; }
+  .particle:nth-child(3) { left: 40%; top: 70%; animation-delay: 2s; }
+  .particle:nth-child(4) { left: 55%; top: 20%; animation-delay: 0.5s; width: 5px; height: 5px; }
+  .particle:nth-child(5) { left: 70%; top: 65%; animation-delay: 3s; }
+  .particle:nth-child(6) { left: 82%; top: 35%; animation-delay: 1.5s; width: 3px; height: 3px; }
+  .particle:nth-child(7) { left: 30%; top: 80%; animation-delay: 2.5s; }
+  .particle:nth-child(8) { left: 60%; top: 50%; animation-delay: 0.8s; }
+  /* Decorative line */
+  .deco-line {
+    position: absolute; z-index: 2; bottom: 30px;
+    width: 60%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(167,139,250,0.3), rgba(34,211,238,0.3), transparent);
+  }
+</style>
+</head>
+<body>
+<div class="banner">
+  <div class="grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="particles">
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div><div class="particle"></div>
+  </div>
+  <div class="title">
+    <h1>AI 创意团队</h1>
+    <div class="sub">Creative AI · 4 Minds · One Vision</div>
+  </div>
+  <div class="agents">
+    <div class="agent agent-1">
+      <div class="icon-wrap">🎨</div>
+      <div class="agent-name">图像生成</div>
+      <div class="agent-desc">ComfyUI · FLUX</div>
+    </div>
+    <div class="agent agent-2">
+      <div class="icon-wrap">🎬</div>
+      <div class="agent-name">视频制作</div>
+      <div class="agent-desc">Remotion · React</div>
+    </div>
+    <div class="agent agent-3">
+      <div class="icon-wrap">🎵</div>
+      <div class="agent-name">音乐创作</div>
+      <div class="agent-desc">Suno · Songwriting</div>
+    </div>
+    <div class="agent agent-4">
+      <div class="icon-wrap">✍️</div>
+      <div class="agent-name">内容润色</div>
+      <div class="agent-desc">Humanizer · Voice</div>
+    </div>
+  </div>
+  <div class="deco-line"></div>
+</div>
+</body>
+</html>

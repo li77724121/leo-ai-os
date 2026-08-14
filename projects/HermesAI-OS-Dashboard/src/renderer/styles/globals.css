@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 15 23 42;
+    --foreground: 248 250 252;
+  }
+
+  .dark {
+    --background: 15 23 42;
+    --foreground: 248 250 252;
+  }
+
+  * {
+    @apply border-surface-700;
+  }
+
+  body {
+    @apply bg-surface-950 text-white antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* 滚动条样式 */
+  ::-webkit-scrollbar {
+    @apply w-1.5 h-1.5;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-surface-900;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-600 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-surface-500;
+  }
+}
+
+@layer components {
+  /* 玻璃态卡片 */
+  .glass-card {
+    @apply bg-surface-900/60 backdrop-blur-xl border border-surface-700/50 rounded-xl;
+  }
+
+  .glass-card-hover {
+    @apply glass-card hover:border-surface-600/50 transition-all duration-300;
+  }
+
+  /* 状态指示灯 */
+  .status-dot {
+    @apply w-2 h-2 rounded-full;
+  }
+  .status-working {
+    @apply bg-status-working animate-pulse;
+  }
+  .status-waiting {
+    @apply bg-status-waiting animate-breathe;
+  }
+  .status-idle {
+    @apply bg-status-idle;
+  }
+  .status-error {
+    @apply bg-status-error animate-pulse;
+  }
+  .status-learning {
+    @apply bg-status-learning animate-spin-slow;
+  }
+
+  /* 数据流动画 */
+  .data-flow {
+    @apply relative overflow-hidden;
+    background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.3), transparent);
+    background-size: 200% 100%;
+    animation: flow 2s linear infinite;
+  }
+
+  /* Token 流向动画 */
+  .token-flow {
+    @apply relative;
+    background: linear-gradient(90deg, #06b6d4, #8b5cf6, #f59e0b, #06b6d4);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* 发光边框 */
+  .glow-border {
+    @apply relative;
+  }
+  .glow-border::before {
+    content: '';
+    @apply absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300;
+    background: linear-gradient(90deg, #06b6d4, #8b5cf6, #f59e0b);
+    filter: blur(8px);
+    z-index: -1;
+  }
+  .glow-border:hover::before {
+    @apply opacity-50;
+  }
+
+  /* 虚拟列表容器 */
+  .virtual-list {
+    @apply overflow-y-auto;
+  }
+
+  /* 按钮变体 */
+  .btn-primary {
+    @apply px-4 py-2 bg-ai-600 hover:bg-ai-500 text-white font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-ai-500 focus:ring-offset-2 focus:ring-offset-surface-950;
+  }
+  .btn-secondary {
+    @apply px-4 py-2 bg-surface-800 hover:bg-surface-700 text-white font-medium rounded-lg transition-colors duration-200 border border-surface-600 focus:outline-none focus:ring-2 focus:ring-surface-500 focus:ring-offset-2 focus:ring-offset-surface-950;
+  }
+  .btn-danger {
+    @apply px-4 py-2 bg-status-error/20 hover:bg-status-error/30 text-status-error font-medium rounded-lg transition-colors duration-200 border border-status-error/30 focus:outline-none focus:ring-2 focus:ring-status-error focus:ring-offset-2 focus:ring-offset-surface-950;
+  }
+  .btn-ghost {
+    @apply px-3 py-1.5 text-surface-400 hover:text-white hover:bg-surface-800 rounded-lg transition-colors duration-200;
+  }
+}
+
+@layer utilities {
+  /* 文本渐变 */
+  .text-gradient {
+    @apply bg-gradient-to-r from-ai-400 via-purple-400 to-amber-400 bg-clip-text text-transparent;
+  }
+
+  /* 隐藏滚动条 */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

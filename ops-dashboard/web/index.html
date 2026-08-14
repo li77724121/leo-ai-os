@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🖥️ 多任务监控大屏 | Hermes AI OS</title>
+<style>
+:root {
+  --bg: #020617; --card: #0f172a; --border: #1e293b;
+  --text: #e2e8f0; --dim: #64748b;
+  --green: #10b981; --red: #ef4444; --blue: #0ea5e9;
+  --yellow: #f59e0b; --purple: #8b5cf6; --gold: #fbbf24;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body { height:100%; }
+body {
+  background:var(--bg); color:var(--text);
+  font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;
+  padding:12px; overflow:hidden;
+}
+.dash-grid {
+  display:grid; height:100%;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1.2fr 0.9fr;
+  gap:10px;
+}
+/* 5屏布局: 中间控制台占中下大格 */
+.panel {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:14px; padding:14px; overflow:hidden;
+  position:relative; min-height:0;
+}
+.panel-hermes   { grid-column:1; grid-row:1; }
+.panel-zspace   { grid-column:3; grid-row:1; }
+.panel-vscode   { grid-column:1; grid-row:2; }
+.panel-events   { grid-column:2 / 4; grid-row:2; }
+.panel-control  { grid-column:1 / 4; grid-row:3; }
+
+.panel-header {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--border);
+}
+.panel-header h2 { font-size:16px; font-weight:700; }
+.panel-header h2 span { margin-right:6px; }
+.live-dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+.dot-green { background:var(--green); animation:pulse 1.5s infinite; }
+.dot-red { background:var(--red); animation:blink 0.8s infinite; }
+.dot-yellow { background:var(--yellow); animation:pulse 2s infinite; }
+.dot-idle { background:var(--dim); }
+.badge { font-size:11px; font-weight:600; padding:3px 10px; border-radius:12px; }
+.badge-active { background:rgba(16,185,129,.15); color:var(--green); animation:blink 1.2s infinite; }
+.badge-idle { background:rgba(100,116,139,.12); color:var(--dim); }
+.badge-error { background:rgba(239,68,68,.15); color:var(--red); animation:blink 0.6s infinite; }
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+@keyframes breathe {
+  0%,100% { box-shadow:0 0 8px rgba(16,185,129,.25); border-color:rgba(16,185,129,.4); }
+  50% { box-shadow:0 0 22px rgba(16,185,129,.6); border-color:rgba(16,185,129,.9); }
+}
+@keyframes breatheRed {
+  0%,100% { box-shadow:0 0 8px rgba(239,68,68,.25); border-color:rgba(239,68,68,.4); }
+  50% { box-shadow:0 0 22px rgba(239,68,68,.6); border-color:rgba(239,68,68,.9); }
+}
+@keyframes scanline {
+  0% { transform:translateY(-100%); }
+  100% { transform:translateY(500%); }
+}
+@keyframes flowline {
+  0% { background-position:0 0; }
+  100% { background-position:60px 0; }
+}
+@keyframes radar {
+  0% { transform:scale(.5); opacity:.9; }
+  100% { transform:scale(2); opacity:0; }
+}
+@keyframes slideIn {
+  from { transform:translateX(30px); opacity:0; }
+  to { transform:translateX(0); opacity:1; }
+}
+@keyframes flashGold {
+  0%,100% { box-shadow:0 0 6px rgba(251,191,36,.3); }
+  50% { box-shadow:0 0 20px rgba(251,191,36,.8); }
+}
+
+.panel.active { animation:breathe 1.8s infinite; }
+.panel.error { animation:breatheRed 1.2s infinite; }
+.panel.scanning::after {
+  content:''; position:absolute; left:0; right:0; top:0; height:35px;
+  background:linear-gradient(to bottom, transparent, rgba(16,185,129,.1), transparent);
+  animation:scanline 2.4s linear infinite; pointer-events:none;
+}
+
+/* ===== 通用数据行 ===== */
+.row { display:flex; justify-content:space-between; align-items:center; padding:5px 0; font-size:13px; }
+.row .k { color:var(--dim); }
+.row .v { font-weight:600; }
+.val-green { color:var(--green); }
+.val-red { color:var(--red); }
+.val-blue { color:var(--blue); }
+.val-gold { color:var(--gold); }
+.val-yellow { color:var(--yellow); }
+
+/* ===== Hermes 屏 ===== */
+.metric-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.metric { background:rgba(14,165,233,.06); border:1px solid rgba(14,165,233,.2); border-radius:10px; padding:8px; text-align:center; }
+.metric .mv { font-size:20px; font-weight:700; color:var(--blue); }
+.metric .ml { font-size:10px; color:var(--dim); margin-top:2px; }
+.model-bar {
+  margin-top:8px; padding:8px; background:rgba(139,92,246,.06);
+  border:1px solid rgba(139,92,246,.25); border-radius:10px;
+}
+.model-bar .cur { font-size:15px; font-weight:700; color:var(--purple); }
+.model-bar .sub { font-size:11px; color:var(--dim); margin-top:3px; }
+.model-bar.working { border-color:var(--red); animation:breatheRed 1.2s infinite; }
+
+/* ===== 极空间屏 ===== */
+.zstat { display:flex; gap:8px; flex-wrap:wrap; }
+.zchip { background:rgba(100,116,139,.08); border:1px solid var(--border); border-radius:8px; padding:4px 10px; font-size:12px; }
+.zchip b { margin-left:4px; }
+.container-list { margin-top:8px; }
+.ctn { display:flex; align-items:center; gap:8px; padding:4px 0; font-size:12px; border-bottom:1px solid #16213a; }
+.ctn:last-child { border:none; }
+.ctn .st { width:8px; height:8px; border-radius:50%; }
+.st-up { background:var(--green); }
+.st-exit { background:var(--red); }
+.st-restart { background:var(--yellow); animation:pulse 1s infinite; }
+.ctn .name { flex:1; font-weight:600; }
+.ctn .uptime { color:var(--dim); font-size:11px; }
+
+/* ===== VS Code 屏 ===== */
+.cline-task {
+  margin-top:6px; padding:10px; background:rgba(16,185,129,.05);
+  border:1px solid rgba(16,185,129,.2); border-radius:10px;
+}
+.cline-task.working { border-color:var(--green); animation:breathe 1.8s infinite; }
+.progress { height:6px; background:#1e293b; border-radius:3px; margin-top:6px; overflow:hidden; }
+.progress .fill { height:100%; background:linear-gradient(90deg,var(--green),var(--blue)); border-radius:3px; transition:width .5s; }
+.file-line { display:flex; gap:6px; align-items:center; padding:3px 0; font-size:12px; color:var(--dim); }
+
+/* ===== 事件流 ===== */
+.ev-list { height:100%; overflow-y:auto; font-size:12px; }
+.ev { display:flex; gap:8px; padding:4px 0; border-bottom:1px solid #141d33; animation:slideIn .3s ease; }
+.ev .t { color:var(--dim); flex-shrink:0; font-size:11px; }
+.ev .m { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ev-info { color:var(--dim); }
+.ev-success { color:var(--green); }
+.ev-warn { color:var(--yellow); }
+.ev-error { color:var(--red); font-weight:600; }
+.ev .src { flex-shrink:0; font-size:10px; padding:1px 6px; border-radius:6px; background:#1e293b; color:var(--dim); }
+
+/* ===== 控制中台 ===== */
+.control-inner { display:grid; grid-template-columns:1.2fr 1fr; gap:12px; height:100%; }
+.okx-panel { background:rgba(251,191,36,.05); border:1px solid rgba(251,191,36,.25); border-radius:12px; padding:10px; }
+.okx-panel h3 { font-size:14px; color:var(--gold); margin-bottom:8px; }
+.okx-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+.okx-item { text-align:center; }
+.okx-item .v { font-size:18px; font-weight:700; color:var(--gold); }
+.okx-item .l { font-size:10px; color:var(--dim); margin-top:2px; }
+.trade-flash { animation:flashGold 1s 3; }
+.heartbeat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.hb-card { background:rgba(100,116,139,.06); border:1px solid var(--border); border-radius:10px; padding:8px; text-align:center; position:relative; }
+.hb-card .name { font-size:12px; font-weight:600; }
+.hb-card .st { margin-top:4px; font-size:11px; }
+.hb-card .radar { position:relative; width:12px; height:12px; margin:0 auto 4px; }
+.hb-card .radar::before {
+  content:''; position:absolute; inset:0; border-radius:50%;
+  background:var(--green); animation:radar 1.4s infinite;
+}
+.hb-card.off .radar::before { background:var(--dim); animation:none; }
+.hb-card.err .radar::before { background:var(--red); animation:blink .6s infinite; }
+.controls { margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; }
+.btn {
+  background:rgba(14,165,233,.1); border:1px solid rgba(14,165,233,.35);
+  color:var(--blue); padding:6px 14px; border-radius:8px; font-size:12px; font-weight:600;
+  cursor:pointer; transition:all .2s;
+}
+.btn:hover { background:rgba(14,165,233,.25); transform:translateY(-1px); }
+.btn-danger { background:rgba(239,68,68,.1); border-color:rgba(239,68,68,.35); color:var(--red); }
+.btn-success { background:rgba(16,185,129,.1); border-color:rgba(16,185,129,.35); color:var(--green); }
+
+/* 顶栏 */
+.topbar {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:0 4px 10px; 
+}
+.topbar h1 { font-size:20px; font-weight:800; }
+.topbar h1 span { background:linear-gradient(90deg,#0ea5e9,#10b981,#8b5cf6,#f59e0b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.topbar .clock { font-size:14px; color:var(--dim); font-family:monospace; }
+
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-thumb { background:#334155; border-radius:2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>🖥️ <span>多任务监控大屏</span> | Hermes AI OS</h1>
+  <div class="clock" id="clock">—</div>
+</div>
+
+<div class="dash-grid">
+
+  <!-- ① Hermes 状态 -->
+  <div class="panel panel-hermes" id="p_hermes">
+    <div class="panel-header">
+      <h2><span>🤖</span> Hermes</h2>
+      <span class="badge badge-idle" id="badge_hermes">待命</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric"><div class="mv" id="h_models">—</div><div class="ml">模型调用</div></div>
+      <div class="metric"><div class="mv" id="h_tokens">—</div><div class="ml">tokens</div></div>
+      <div class="metric"><div class="mv" id="h_cost">—</div><div class="ml">消耗</div></div>
+      <div class="metric"><div class="mv" id="h_tasks">—</div><div class="ml">任务</div></div>
+    </div>
+    <div class="model-bar" id="h_modelbar">
+      <div class="cur">—</div>
+      <div class="sub">当前模型</div>
+    </div>
+  </div>
+
+  <!-- ② 极空间 Z2S -->
+  <div class="panel panel-zspace" id="p_zspace">
+    <div class="panel-header">
+      <h2><span>📦</span> 极空间 Z2S</h2>
+      <span class="badge badge-idle" id="badge_zspace">未知</span>
+    </div>
+    <div class="zstat" id="z_stats">
+      <span class="zchip">CPU <b id="z_cpu">—</b></span>
+      <span class="zchip">内存 <b id="z_mem">—</b></span>
+      <span class="zchip">存储 <b id="z_disk">—</b></span>
+      <span class="zchip">网络 <b id="z_net">—</b></span>
+    </div>
+    <div class="container-list" id="z_containers">加载中...</div>
+  </div>
+
+  <!-- ③ VS Code + Cline -->
+  <div class="panel panel-vscode" id="p_vscode">
+    <div class="panel-header">
+      <h2><span>💻</span> VS Code + Cline</h2>
+      <span class="badge badge-idle" id="badge_vscode">未知</span>
+    </div>
+    <div class="row"><span class="k">编辑器</span><span class="v" id="v_editor">—</span></div>
+    <div class="cline-task" id="v_cline">
+      <div style="font-size:13px;color:var(--dim)">Cline: 空闲</div>
+      <div class="progress"><div class="fill" style="width:0%"></div></div>
+      <div style="font-size:11px;color:var(--dim);margin-top:4px" id="v_cline_sub">无任务</div>
+    </div>
+    <div id="v_files" style="margin-top:6px">—</div>
+  </div>
+
+  <!-- ④ 实时窗口 -->
+  <div class="panel panel-events" id="p_events">
+    <div class="panel-header">
+      <h2><span>📡</span> 实时窗口</h2>
+      <span class="badge badge-idle" id="badge_events">—</span>
+    </div>
+    <div class="ev-list" id="ev_list"><div style="color:var(--dim)">连接中...</div></div>
+  </div>
+
+  <!-- ⑤ 控制中台 -->
+  <div class="panel panel-control" id="p_control">
+    <div class="panel-header">
+      <h2><span>🎛️</span> 控制中台</h2>
+      <span class="badge badge-idle" id="badge_control">运行中</span>
+    </div>
+    <div class="control-inner">
+      <div class="okx-panel" id="okx_panel">
+        <h3>💰 欧易交易 (OKX)</h3>
+        <div class="okx-grid">
+          <div class="okx-item"><div class="v" id="okx_bal">—</div><div class="l">账户余额</div></div>
+          <div class="okx-item"><div class="v" id="okx_sol">—</div><div class="l">SOL 现价</div></div>
+          <div class="okx-item"><div class="v" id="okx_pos">—</div><div class="l">持仓</div></div>
+          <div class="okx-item"><div class="v" id="okx_orders">—</div><div class="l">挂单</div></div>
+          <div class="okx-item"><div class="v" id="okx_status">—</div><div class="l">网格</div></div>
+          <div class="okx-item"><div class="v" id="okx_pnl">—</div><div class="l">盈亏</div></div>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-size:13px;color:var(--dim);margin-bottom:6px">系统心跳</h3>
+        <div class="heartbeat-grid" id="hb_grid">—</div>
+        <div class="controls">
+          <button class="btn" onclick="window.location.reload()">🔄 刷新</button>
+          <button class="btn-success" onclick="pingAll()">📡 探测</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const CLOCK = document.getElementById('clock');
+setInterval(() => {
+  CLOCK.textContent = new Date().toLocaleTimeString('zh-CN', {hour12:false});
+}, 1000);
+
+// 状态辅助
+function setBadge(el, text, cls) {
+  el.textContent = text;
+  el.className = 'badge ' + (cls || 'badge-idle');
+}
+function setPanel(id, mode) {
+  const p = document.getElementById(id);
+  p.classList.remove('active','error','scanning');
+  if (mode === 'active') { p.classList.add('active'); }
+  else if (mode === 'error') { p.classList.add('error'); }
+  else if (mode === 'scan') { p.classList.add('active','scanning'); }
+}
+
+// 刷新状态
+async function refresh() {
+  try {
+    const r = await fetch('/api/state');
+    const d = await r.json();
+    const now = Date.now()/1000;
+
+    // ===== Hermes =====
+    const h = d.hermes || {};
+    const hAge = now - (h.last_update || 0);
+    document.getElementById('h_models').textContent = h.models || '—';
+    document.getElementById('h_tokens').textContent = h.tokens ? (h.tokens/1e6).toFixed(0)+'M' : '—';
+    document.getElementById('h_cost').textContent = h.cost ? '¥'+h.cost : '—';
+    document.getElementById('h_tasks').textContent = h.tasks || '—';
+    if (h.model) {
+      const mb = document.getElementById('h_modelbar');
+      mb.querySelector('.cur').textContent = h.model;
+      mb.querySelector('.sub').textContent = h.model_sub || '当前模型';
+      mb.classList.toggle('working', hAge < 180);
+    }
+    setBadge(document.getElementById('badge_hermes'),
+      hAge < 180 ? '🟢 活跃' : (hAge < 600 ? '🟡 缓慢' : '⚪ 待命'),
+      hAge < 180 ? 'badge-active' : '');
+    setPanel('p_hermes', hAge < 180 ? 'scan' : (hAge > 900 ? 'error' : ''));
+
+    // ===== 极空间 =====
+    const z = d.zspace || {};
+    const zAge = now - (z.last_update || 0);
+    if (z.connected) {
+      document.getElementById('z_cpu').textContent = z.sync_state || '—';
+      document.getElementById('z_mem').textContent = (z.files || 0).toLocaleString();
+      document.getElementById('z_disk').textContent = (z.global_files || 0).toLocaleString();
+      document.getElementById('z_net').textContent = (z.pending || 0) + ' 待同步';
+    } else {
+      document.getElementById('z_cpu').textContent = '—';
+      document.getElementById('z_mem').textContent = '—';
+      document.getElementById('z_disk').textContent = '—';
+      document.getElementById('z_net').textContent = '—';
+    }
+    if (z.connected) {
+      document.getElementById('z_containers').innerHTML = `
+        <div style="padding:6px 0;font-size:12px;color:var(--green)">✅ 极空间 App 通道在线 (syncthing)</div>
+        <div style="padding:6px 0;font-size:12px;color:var(--dim)">同步状态: ${z.sync_state || '—'} | 文件 ${(z.files||0).toLocaleString()} / ${(z.global_files||0).toLocaleString()}</div>
+        <div style="padding:6px 0;font-size:12px;color:var(--dim)">待同步: ${z.pending || 0} 个 | 通道: ${z.addr || '—'}</div>
+        <div style="padding:6px 0;font-size:11px;color:var(--dim)">💡 深度监控 (CPU/Docker) 需开启极空间 SSH</div>`;
+    } else {
+      document.getElementById('z_containers').innerHTML = '<div style="color:var(--red)">极空间未连接</div>';
+    }
+    setBadge(document.getElementById('badge_zspace'),
+      z.connected ? '🟢 在线' : (zAge > 900 ? '🔴 离线' : '🟡 连接中'),
+      z.connected ? 'badge-active' : (zAge > 900 ? 'badge-error' : ''));
+    setPanel('p_zspace', z.connected ? 'active' : (zAge > 900 ? 'error' : ''));
+
+    // ===== VS Code =====
+    const v = d.vscode || {};
+    const vAge = now - (v.last_update || 0);
+    document.getElementById('v_editor').textContent = v.editor || '—';
+    if (v.cline) {
+      const ct = document.getElementById('v_cline');
+      ct.querySelector('div').textContent = v.cline.task || 'Cline: 空闲';
+      ct.querySelector('.fill').style.width = (v.cline.progress || 0) + '%';
+      document.getElementById('v_cline_sub').textContent = v.cline.detail || '无任务';
+      ct.classList.toggle('working', !!v.cline.working);
+    }
+    if (v.files) document.getElementById('v_files').innerHTML = v.files.map(f =>
+      `<div class="file-line">📄 ${f}</div>`).join('');
+    setBadge(document.getElementById('badge_vscode'),
+      v.cline && v.cline.working ? '🔥 工作中' : '⚪ 空闲',
+      v.cline && v.cline.working ? 'badge-active' : '');
+    setPanel('p_vscode', v.cline && v.cline.working ? 'scan' : '');
+
+    // ===== OKX (控制中台) =====
+    const o = d.okx || {};
+    const oAge = now - (o.last_update || 0);
+    if (o.balance) document.getElementById('okx_bal').textContent = '$'+o.balance;
+    if (o.sol) document.getElementById('okx_sol').textContent = '$'+o.sol;
+    if (o.position) document.getElementById('okx_pos').textContent = '$'+o.position;
+    if (o.orders) document.getElementById('okx_orders').textContent = o.orders;
+    if (o.grid_status) document.getElementById('okx_status').textContent = o.grid_status;
+    if (o.pnl !== undefined) {
+      const pnlEl = document.getElementById('okx_pnl');
+      pnlEl.textContent = (o.pnl>0?'+':'')+o.pnl;
+      pnlEl.className = 'v ' + (o.pnl>0?'val-green':'val-red');
+    }
+    setBadge(document.getElementById('badge_control'), oAge < 300 ? '🟢 运行中' : '🟡 检查中', 'badge-active');
+
+    // ===== 心跳 =====
+    const hb = d.heartbeat || {};
+    document.getElementById('hb_grid').innerHTML = Object.entries(hb).map(([k,v]) => `
+      <div class="hb-card ${v==='active'?'':v==='idle'?'off':'err'}">
+        <div class="radar"></div>
+        <div class="name">${k}</div>
+        <div class="st">${v==='active'?'🟢 活跃':v==='slow'?'🟡 缓慢':'⚪ 离线'}</div>
+      </div>`).join('');
+  } catch(e) {
+    console.error('refresh error:', e);
+  }
+}
+
+// WebSocket 事件流
+let ws = null;
+function connectWS() {
+  try {
+    ws = new WebSocket((location.protocol==='https:'?'wss://':'ws://') + location.host + '/ws');
+    ws.onmessage = ev => {
+      const msg = JSON.parse(ev.data);
+      if (msg.type !== 'event') return;
+      addEvent(msg.data);
+    };
+    ws.onclose = () => setTimeout(connectWS, 3000);
+    ws.onerror = () => ws && ws.close();
+  } catch(e) { setTimeout(connectWS, 5000); }
+}
+function addEvent(ev) {
+  const list = document.getElementById('ev_list');
+  const div = document.createElement('div');
+  div.className = 'ev ev-' + ev.level;
+  div.innerHTML = `<span class="t">${ev.ts.slice(11)}</span><span class="src">${ev.source}</span><span class="m">${ev.message}</span>`;
+  list.prepend(div);
+  // 限制条数
+  while (list.children.length > 200) list.lastChild.remove();
+  // 关键事件触发动画
+  if (ev.level === 'error') setPanel('p_events','error');
+  else if (ev.source === 'okx') {
+    document.getElementById('okx_panel').classList.add('trade-flash');
+    setTimeout(() => document.getElementById('okx_panel').classList.remove('trade-flash'), 1200);
+  }
+}
+
+async function pingAll() {
+  try {
+    const r = await fetch('/api/ping');
+    const d = await r.json();
+    const hb = d.heartbeat || {};
+    document.getElementById('hb_grid').innerHTML = Object.entries(hb).map(([k,v]) => `
+      <div class="hb-card ${v==='active'?'':v==='idle'?'off':'err'}">
+        <div class="radar"></div>
+        <div class="name">${k}</div>
+        <div class="st">${v.status} · ${v.age}s</div>
+      </div>`).join('');
+  } catch(e) {}
+}
+
+// 初始载入历史事件
+fetch('/api/events').then(r=>r.json()).then(d => {
+  (d.events||[]).reverse().forEach(addEvent);
+}).catch(()=>{});
+
+refresh();
+setInterval(refresh, 3000);
+connectWS();
+</script>
+</body>
+</html>

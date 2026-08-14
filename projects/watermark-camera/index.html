@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>今日水印相机 · 仿版</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="logo">
+      <span class="logo-dot"></span>
+      今日水印相机 <em>仿</em>
+    </div>
+    <div class="header-actions">
+      <button id="btn-upload" class="ghost-btn">相册</button>
+      <button id="btn-flip" class="ghost-btn">翻转</button>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div class="camera-wrap" id="cameraWrap">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="snapshot" class="hidden"></canvas>
+      <div class="live-watermark" id="liveWatermark"></div>
+      <div class="camera-hint" id="cameraHint">点击下方按钮拍照</div>
+    </div>
+  </main>
+
+  <section class="panel">
+    <div class="panel-title">水印模板</div>
+    <div class="template-row" id="templateRow">
+      <button class="tpl active" data-tpl="work">工程打卡</button>
+      <button class="tpl" data-tpl="attend">考勤打卡</button>
+      <button class="tpl" data-tpl="travel">旅游记录</button>
+      <button class="tpl" data-tpl="time">时间地点</button>
+      <button class="tpl" data-tpl="custom">自定义</button>
+    </div>
+
+    <div class="panel-title">水印内容</div>
+    <div class="switch-grid">
+      <label class="sw"><input type="checkbox" id="opt-date" checked /><span>日期</span></label>
+      <label class="sw"><input type="checkbox" id="opt-time" checked /><span>时间</span></label>
+      <label class="sw"><input type="checkbox" id="opt-location" checked /><span>地点</span></label>
+      <label class="sw"><input type="checkbox" id="opt-weather" checked /><span>天气</span></label>
+      <label class="sw"><input type="checkbox" id="opt-temp" checked /><span>温度</span></label>
+      <label class="sw"><input type="checkbox" id="opt-coord" /><span>经纬度</span></label>
+      <label class="sw"><input type="checkbox" id="opt-step" /><span>步数</span></label>
+      <label class="sw"><input type="checkbox" id="opt-logo" checked /><span>品牌</span></label>
+    </div>
+
+    <div class="field">
+      <label>自定义标题</label>
+      <input type="text" id="customTitle" placeholder="例如：3号楼施工现场" />
+    </div>
+    <div class="field">
+      <label>品牌文字</label>
+      <input type="text" id="brandText" value="今日水印相机" />
+    </div>
+
+    <div class="panel-title">水印位置</div>
+    <div class="pos-row" id="posRow">
+      <button class="pos active" data-pos="bl">左下</button>
+      <button class="pos" data-pos="br">右下</button>
+      <button class="pos" data-pos="tl">左上</button>
+      <button class="pos" data-pos="tr">右上</button>
+    </div>
+
+    <div class="panel-title">主题色</div>
+    <div class="theme-row" id="themeRow">
+      <button class="theme active" data-theme="dark" style="background:#1a1a1a"></button>
+      <button class="theme" data-theme="blue" style="background:#1565c0"></button>
+      <button class="theme" data-theme="red" style="background:#c62828"></button>
+      <button class="theme" data-theme="green" style="background:#2e7d32"></button>
+      <button class="theme" data-theme="orange" style="background:#ef6c00"></button>
+    </div>
+  </section>
+
+  <footer class="action-bar">
+    <button id="btn-capture" class="capture-btn">
+      <span class="capture-ring"></span>
+    </button>
+    <button id="btn-retake" class="text-btn hidden">重拍</button>
+    <button id="btn-download" class="text-btn hidden">保存</button>
+  </footer>
+
+  <input type="file" id="fileInput" accept="image/*" class="hidden" />
+
+  <script src="app.js"></script>
+</body>
+</html>
